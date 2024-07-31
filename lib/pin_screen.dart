@@ -72,7 +72,7 @@ class _PinScreenState extends State<PinScreen> {
   }
 
   Future<void> _sendPinToServer(String pin) async {
-    final url = 'http://localhost:3000/setPin';
+    final url = 'http://192.168.1.79:3000/setPin';
 
     try {
       final response = await http.post(

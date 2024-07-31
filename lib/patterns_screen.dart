@@ -6,7 +6,7 @@ import 'package:http/http.dart' as http;
 class PatternsScreen extends StatefulWidget {
   final String useremail;
 
-  PatternsScreen({required this.useremail});
+  PatternsScreen({super.key, required this.useremail});
 
   @override
   _PatternsScreenState createState() => _PatternsScreenState();
@@ -272,17 +272,17 @@ class _ConfirmPatternScreenState extends State<ConfirmPatternScreen>
   }
 
   void _confirm() async {
-    if (codes.join() == widget.initialPattern.join()) {
-      final response = await http.post(
-        Uri.parse('http://localhost:3000/setpattern'),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: jsonEncode(<String, dynamic>{
-          'pattern': codes.join(),
-          'useremail': widget.useremail,
-        }),
-      );
+      if (codes.join() == widget.initialPattern.join()) {
+        final response = await http.post(
+          Uri.parse('http://192.168.1.79:3000/setpattern'),
+          headers: <String, String>{
+            'Content-Type': 'application/json; charset=UTF-8',
+          },
+          body: jsonEncode(<String, dynamic>{
+            'pattern': codes.join(),
+            'useremail': widget.useremail,
+          }),
+        );
 
       final Map<String, dynamic> responseBody = jsonDecode(response.body);
 

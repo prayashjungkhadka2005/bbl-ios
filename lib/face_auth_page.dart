@@ -1,8 +1,10 @@
+import 'package:bbl_security/AppsScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'dart:convert'; // Import for encoding to base64
+import 'package:http/http.dart' as http; // Import for HTTP requests
 
 class AuthService {
   static final LocalAuthentication _localAuthentication = LocalAuthentication();
@@ -17,7 +19,6 @@ class AuthService {
       if (isBiometricSupported && canCheckBiometrics) {
         isAuthenticated = await _localAuthentication.authenticate(
           localizedReason: 'Scan your fingerprint to authenticate',
-          // Removed the undefined parameters
         );
       }
     } on PlatformException catch (e) {
@@ -28,6 +29,10 @@ class AuthService {
 }
 
 class FaceAuthPage extends StatefulWidget {
+  // final String useremail;
+
+  // FaceAuthPage({super.key, required this.useremail});
+
   @override
   _FaceAuthPageState createState() => _FaceAuthPageState();
 }
@@ -74,11 +79,22 @@ class _FaceAuthPageState extends State<FaceAuthPage> {
 
   Future<void> _authenticate() async {
     bool authenticated = false;
+    String authType = '';
+
     try {
-      authenticated = await auth.authenticate(
-        localizedReason: 'Scan your face to authenticate',
-        // Removed the undefined parameters
-      );
+      // Check if face biometrics is available and authenticate accordingly
+      if (_canCheckFace) {
+        authenticated = await auth.authenticate(
+          localizedReason: 'Scan your face to authenticate',
+        );
+        authType = 'face';
+      } else {
+        // Check for fingerprint biometrics and authenticate if available
+        authenticated = await auth.authenticate(
+          localizedReason: 'Scan your fingerprint to authenticate',
+        );
+        authType = 'fingerprint';
+      }
     } catch (e) {
       print("Error during authentication: $e");
       setState(() {
@@ -92,12 +108,63 @@ class _FaceAuthPageState extends State<FaceAuthPage> {
       // Generate a token after successful authentication
       String token = _generateToken();
       print("Generated Token: $token");
-    }
 
-    setState(() {
-      _authorized = authenticated ? 'Authorized' : 'Not Authorized';
-      _statusMessage = authenticated ? 'Authorized' : 'Not Authorized';
-    });
+      // Send authentication result to API
+      final response = await http.post(
+        Uri.parse('http://192.168.1.79:3000/setbiometric'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, dynamic>{
+          'authType': authType,
+          'biometricToken': token,
+          'useremail': "wolfhawk188@gmail.com" // Use widget.useremail
+        }),
+      );
+
+      if (response.statusCode == 201) {
+        // Authentication and API call successful
+        setState(() {
+          _authorized = 'Authorized';
+          _statusMessage = authType == 'face'
+              ? 'Face authentication successful'
+              : 'Fingerprint authentication successful';
+        });
+
+        // Display a snackbar message
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              authType == 'face'
+                  ? 'Face authentication setup successful!'
+                  : 'Fingerprint authentication setup successful!',
+            ),
+            duration: Duration(seconds: 2),
+          ),
+        );
+
+        // Wait for the snackbar to finish before navigating
+        await Future.delayed(Duration(seconds: 2));
+
+        // Navigate to the private screen or another page
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => AppsScreen()),
+        );
+      } else {
+        // API call failed
+        setState(() {
+          _authorized = 'Authorization failed';
+          _statusMessage = 'Failed to authenticate with API';
+        });
+        print('Failed to authenticate with API: ${response.statusCode}');
+      }
+    } else {
+      setState(() {
+        _authorized = 'Not Authorized';
+        _statusMessage = 'Authentication failed';
+      });
+    }
 
     print("Authentication result: $authenticated");
   }
@@ -174,17 +241,15 @@ class _FaceAuthPageState extends State<FaceAuthPage> {
   }
 }
 
-class PrivateScreen extends StatelessWidget {
-  const PrivateScreen({Key? key}) : super(key: key);
-
+class AppsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Private Screen'),
+        title: Text('Apps Screen'),
       ),
       body: Center(
-        child: Text('Welcome to the private screen!'),
+        child: Text('Welcome to the Apps Screen!'),
       ),
     );
   }

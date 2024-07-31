@@ -34,8 +34,9 @@ class RecoveryOtpScreen extends StatefulWidget {
 
 class _RecoveryOtpScreenState extends State<RecoveryOtpScreen> {
   String otpCode = '';
-  final Uri verifyOtpUrl = Uri.parse('http://localhost:3000/setSecurity');
-  final Uri resendOtpUrl = Uri.parse('http://localhost:3000/resendRecoveryOtp');
+  final Uri verifyOtpUrl = Uri.parse('http://192.168.1.79:3000/setSecurity');
+  final Uri resendOtpUrl =
+      Uri.parse('http://192.168.1.79:3000/resendRecoveryOtp');
 
   void _submitOtp() async {
     if (otpCode.length != 6) {

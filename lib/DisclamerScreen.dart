@@ -18,7 +18,7 @@ class _DisclamerScreenState extends State<DisclamerScreen> {
 
   void _verifyTermsAndConditions() async {
     final url =
-        'http://localhost:3000/disclaimer'; // Ensure this URL is correct
+        'http://192.168.1.79:3000/disclaimer'; // Ensure this URL is correct
     try {
       final response = await http.post(
         Uri.parse(url),

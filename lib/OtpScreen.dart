@@ -24,8 +24,8 @@ class OtpScreen extends StatefulWidget {
 
 class OtpScreenState extends State<OtpScreen> {
   String otpCode = '';
-  final Uri verifyOtpUrl = Uri.parse('http://localhost:3000/verifyotp');
-  final Uri resendOtpUrl = Uri.parse('http://localhost:3000/resendotp');
+  final Uri verifyOtpUrl = Uri.parse('http://192.168.1.79:3000/verifyotp');
+  final Uri resendOtpUrl = Uri.parse('http://192.168.1.79:3000/resendotp');
 
   void _submitOtp() async {
     if (otpCode.length != 6) {
@@ -112,92 +112,97 @@ class OtpScreenState extends State<OtpScreen> {
       body: Center(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 15.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Image.asset(
-                'assets/logo.png',
-                width: 100,
-                height: 100,
-              ),
-              const SizedBox(height: 20),
-              const Text(
-                "OTP Verification",
-                style: TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.w700,
-                    color: Color.fromARGB(223, 4, 4, 4)),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 15),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 40.0),
-                child: Text(
-                  "Enter the OTP sent to your email.",
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Image.asset(
+                  'assets/logo.png',
+                  width: 100,
+                  height: 100,
+                ),
+                const SizedBox(height: 20),
+                const Text(
+                  "OTP Verification",
                   style: TextStyle(
-                    color: Color.fromARGB(255, 116, 114, 114),
-                    fontWeight: FontWeight.w700,
-                    fontSize: 15,
-                  ),
+                      fontSize: 32,
+                      fontWeight: FontWeight.w700,
+                      color: Color.fromARGB(223, 4, 4, 4)),
                   textAlign: TextAlign.center,
                 ),
-              ),
-              const SizedBox(height: 25),
-              OtpTextField(
-                fieldWidth: 50.0,
-                numberOfFields: 6,
-                borderColor: const Color(0xFF512DA8),
-                showFieldAsBox: true,
-                onCodeChanged: (String code) {
-                  setState(() {
-                    otpCode = code;
-                  });
-                },
-                onSubmit: (String verificationCode) {
-                  setState(() {
-                    otpCode = verificationCode;
-                  });
-                },
-              ),
-              const SizedBox(height: 50),
-              SizedBox(
-                width: 380,
-                height: 50,
-                child: ElevatedButton(
-                  onPressed: _submitOtp,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF000E26),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  child: const Text(
-                    "Verify Now",
+                const SizedBox(height: 15),
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 40.0),
+                  child: Text(
+                    "Enter the OTP sent to your email.",
                     style: TextStyle(
+                      color: Color.fromARGB(255, 116, 114, 114),
+                      fontWeight: FontWeight.w700,
                       fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                const SizedBox(height: 25),
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.8,
+                  child: OtpTextField(
+                    fieldWidth: 40.0, // Adjust width as needed
+                    numberOfFields: 6,
+                    borderColor: const Color(0xFF512DA8),
+                    showFieldAsBox: true,
+                    onCodeChanged: (String code) {
+                      setState(() {
+                        otpCode = code;
+                      });
+                    },
+                    onSubmit: (String verificationCode) {
+                      setState(() {
+                        otpCode = verificationCode;
+                      });
+                    },
+                  ),
+                ),
+                const SizedBox(height: 50),
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.8,
+                  height: 50,
+                  child: ElevatedButton(
+                    onPressed: _submitOtp,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF000E26),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    child: const Text(
+                      "Verify Now",
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  GestureDetector(
-                    onTap: _resendOtp,
-                    child: const Text(
-                      "Resend OTP Code",
-                      style: TextStyle(
-                          color: Color(0xFF000E26),
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold),
+                const SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    GestureDetector(
+                      onTap: _resendOtp,
+                      child: const Text(
+                        "Resend OTP Code",
+                        style: TextStyle(
+                            color: Color(0xFF000E26),
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold),
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            ],
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),

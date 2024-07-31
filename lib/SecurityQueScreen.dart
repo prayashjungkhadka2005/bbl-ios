@@ -55,7 +55,7 @@ class _SecurityQueScreenState extends State<SecurityQueScreen> {
     final String ans2 = answer2Controller.text;
     final String recoveryEmail = recoveryEmailController.text;
 
-    final Uri url = Uri.parse('http://localhost:3000/recoveryMail');
+    final Uri url = Uri.parse('http://192.168.1.79:3000/recoveryMail');
 
     try {
       final response = await http.post(
