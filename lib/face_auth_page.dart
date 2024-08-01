@@ -29,9 +29,9 @@ class AuthService {
 }
 
 class FaceAuthPage extends StatefulWidget {
-  // final String useremail;
+  final String useremail;
 
-  // FaceAuthPage({super.key, required this.useremail});
+  FaceAuthPage({super.key, required this.useremail});
 
   @override
   _FaceAuthPageState createState() => _FaceAuthPageState();
@@ -118,7 +118,7 @@ class _FaceAuthPageState extends State<FaceAuthPage> {
         body: jsonEncode(<String, dynamic>{
           'authType': authType,
           'biometricToken': token,
-          'useremail': "wolfhawk188@gmail.com" // Use widget.useremail
+          'useremail': widget.useremail,
         }),
       );
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:device_apps/device_apps.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 void main() {
@@ -11,7 +12,34 @@ class BBLSecurityApp extends StatelessWidget {
     return MaterialApp(
       title: 'BBL Security',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: MaterialColor(
+          0xFF000E26,
+          {
+            50: Color(0xFFE1E6F0),
+            100: Color(0xFFB3BCCF),
+            200: Color(0xFF8093AA),
+            300: Color(0xFF4D6B8D),
+            400: Color(0xFF1A3A6A),
+            500: Color(0xFF000E26),
+            600: Color(0xFF000B22),
+            700: Color(0xFF00081E),
+            800: Color(0xFF00051A),
+            900: Color(0xFF00010D),
+          },
+        ),
+        appBarTheme: AppBarTheme(
+          backgroundColor: Color(0xFF000E26),
+          titleTextStyle: TextStyle(
+            fontSize: 28,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+        textTheme: TextTheme(
+          bodyLarge: TextStyle(color: Colors.black), // Updated property
+          bodyMedium: TextStyle(color: Colors.black), // Updated property
+          bodySmall: TextStyle(color: Colors.black), // Updated property
+        ),
       ),
       home: AppsScreen(),
     );
@@ -24,31 +52,38 @@ class AppsScreen extends StatefulWidget {
 }
 
 class _AppsScreenState extends State<AppsScreen> {
-  List<AppInfo> securedApps = [
-    AppInfo(name: "Instagram", icon: FontAwesomeIcons.instagram),
-    AppInfo(name: "Facebook", icon: FontAwesomeIcons.facebook),
-    AppInfo(name: "Discord", icon: FontAwesomeIcons.discord),
-    AppInfo(name: "Pinterest", icon: FontAwesomeIcons.pinterest),
-    AppInfo(name: "Gmail", icon: FontAwesomeIcons.envelope),
-    AppInfo(name: "WeChat", icon: FontAwesomeIcons.weixin),
-    AppInfo(name: "Snapchat", icon: FontAwesomeIcons.snapchat),
-    AppInfo(name: "Telegram", icon: FontAwesomeIcons.telegram),
-    AppInfo(name: "Threads", icon: FontAwesomeIcons.xTwitter),
-    AppInfo(name: "WhatsApp", icon: FontAwesomeIcons.whatsapp),
-    AppInfo(name: "Youtube", icon: FontAwesomeIcons.youtube),
-  ];
+  List<AppInfo> securedApps = [];
+  List<Application> notSecuredApps = [];
 
-  List<AppInfo> notSecuredApps = [
-    AppInfo(name: "LinkedIn", icon: FontAwesomeIcons.linkedin),
-    AppInfo(name: "Tiktok", icon: FontAwesomeIcons.tiktok),
-    AppInfo(name: "Wordpress", icon: FontAwesomeIcons.wordpress),
-    AppInfo(name: "ChatGPT", icon: FontAwesomeIcons.robot),
-    AppInfo(name: "Viber", icon: FontAwesomeIcons.viber),
-  ];
+  @override
+  void initState() {
+    super.initState();
+    getApps();
+  }
 
-  void _addNewApp(AppInfo app) {
+  Future<void> getApps() async {
+    List<Application> allApps = await DeviceApps.getInstalledApplications(
+      onlyAppsWithLaunchIntent: true,
+      includeAppIcons: true,
+      includeSystemApps: true,
+    );
+
     setState(() {
-      securedApps.add(app);
+      notSecuredApps = allApps
+          .where((app) =>
+              !securedApps.any((securedApp) => securedApp.name == app.appName))
+          .toList();
+    });
+  }
+
+  void _addNewApp(Application app) {
+    setState(() {
+      securedApps.add(AppInfo(
+        name: app.appName,
+        icon: app is ApplicationWithIcon
+            ? Image.memory(app.icon).image
+            : AssetImage('assets/default_icon.png'),
+      ));
       notSecuredApps.remove(app);
     });
   }
@@ -69,61 +104,128 @@ class _AppsScreenState extends State<AppsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('BBL Security'),
+        title: Row(
+          children: [
+            Image.asset(
+              'assets/logo.png',
+              width: 40,
+              height: 40,
+            ),
+            SizedBox(width: 10),
+            Text(
+              'BBL Security',
+              style: Theme.of(context).appBarTheme.titleTextStyle,
+            ),
+          ],
+        ),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Center(
-              child: Image.asset(
-                'assets/logo.png',
-                width: 150,
-                height: 150,
-              ),
-            ),
             Text(
-              'Secure applications',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              '🔒 Secure applications',
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 10),
+            SizedBox(height: 12),
             Expanded(
               child: GridView.count(
                 crossAxisCount: 4,
+                crossAxisSpacing: 12,
+                mainAxisSpacing: 12,
+                childAspectRatio: 1.0,
                 children: List.generate(securedApps.length + 1, (index) {
                   if (index == securedApps.length) {
-                    return IconButton(
-                      icon: Icon(Icons.add),
-                      onPressed: _showAddAppDialog,
+                    return GestureDetector(
+                      onTap: _showAddAppDialog,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.3),
+                              spreadRadius: 2,
+                              blurRadius: 6,
+                            ),
+                          ],
+                        ),
+                        child: Center(
+                          child: Icon(
+                            Icons.add,
+                            size: 36,
+                            color: Color(0xFF000E26),
+                          ),
+                        ),
+                      ),
                     );
                   } else {
-                    return Column(
-                      children: [
-                        Icon(securedApps[index].icon, size: 40),
-                        Text(securedApps[index].name,
-                            textAlign: TextAlign.center),
-                      ],
+                    return Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.3),
+                            spreadRadius: 2,
+                            blurRadius: 6,
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SizedBox(
+                            width: 40,
+                            height: 40,
+                            child: Image(
+                              image: securedApps[index].icon,
+                            ),
+                          ),
+                          SizedBox(height: 8),
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: Text(
+                              securedApps[index].name,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  fontSize: 14, fontWeight: FontWeight.bold),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
                     );
                   }
                 }),
               ),
             ),
-            SizedBox(height: 10),
+            SizedBox(height: 12),
             Text(
-              'Not Secured',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              '⚠️ Not Secured',
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 10),
+            SizedBox(height: 12),
             Expanded(
-              child: ListView(
-                children: notSecuredApps.map((app) {
-                  return ListTile(
-                    leading: Icon(app.icon),
-                    title: Text(app.name),
-                    trailing: Icon(Icons.lock_outline),
+              child: ListView.builder(
+                itemCount: notSecuredApps.length,
+                itemBuilder: (context, index) {
+                  Application app = notSecuredApps[index];
+                  return Card(
+                    elevation: 4,
+                    margin: EdgeInsets.symmetric(vertical: 4),
+                    child: ListTile(
+                      leading: app is ApplicationWithIcon
+                          ? Image.memory(app.icon, width: 40, height: 40)
+                          : Icon(Icons.android, size: 40),
+                      title: Text(app.appName),
+                      trailing: Icon(Icons.lock_outline),
+                      onTap: () => _addNewApp(app),
+                    ),
                   );
-                }).toList(),
+                },
               ),
             ),
           ],
@@ -135,14 +237,13 @@ class _AppsScreenState extends State<AppsScreen> {
 
 class AppInfo {
   final String name;
-  final IconData icon;
-
+  final ImageProvider icon;
   AppInfo({required this.name, required this.icon});
 }
 
 class AddAppDialog extends StatelessWidget {
-  final List<AppInfo> notSecuredApps;
-  final ValueChanged<AppInfo> onAdd;
+  final List<Application> notSecuredApps;
+  final ValueChanged<Application> onAdd;
 
   AddAppDialog({required this.notSecuredApps, required this.onAdd});
 
@@ -154,8 +255,10 @@ class AddAppDialog extends StatelessWidget {
         child: ListBody(
           children: notSecuredApps.map((app) {
             return ListTile(
-              leading: Icon(app.icon),
-              title: Text(app.name),
+              leading: app is ApplicationWithIcon
+                  ? Image.memory(app.icon, width: 40, height: 40)
+                  : Icon(Icons.android, size: 40),
+              title: Text(app.appName),
               onTap: () {
                 onAdd(app);
                 Navigator.of(context).pop();
