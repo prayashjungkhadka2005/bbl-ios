@@ -1,3 +1,4 @@
+import 'package:bbl_security/AppsScreen.dart';
 import 'package:bbl_security/face_auth_page.dart';
 import 'package:flutter/material.dart';
 // import 'package:flutter_svg/flutter_svg.dart';
@@ -34,7 +35,7 @@ class _HomeScreenState extends State<HomeScreen> {
         context,
         PageRouteBuilder(
           pageBuilder: (context, animation, secondaryAnimation) =>
-            LoginScreen(),
+              BBLSecurityApp(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             const begin = Offset(0.0, 1.0);
             const end = Offset.zero;

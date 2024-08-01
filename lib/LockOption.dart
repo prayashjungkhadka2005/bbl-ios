@@ -63,7 +63,7 @@ class _LockOptionState extends State<LockOption> {
               context,
               icon: Icons.face,
               text: 'Face Lock',
-              screen: FaceAuthPage(),
+              screen: FaceAuthPage(useremail: widget.useremail),
             ),
             const SizedBox(height: 10),
             _buildButton(
