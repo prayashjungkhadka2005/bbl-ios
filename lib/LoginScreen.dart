@@ -101,14 +101,14 @@ class LoginScreenState extends State<LoginScreen> {
       print('Response body: ${response.body}'); // Debug print
 
       if (response.statusCode == 201 && mounted) {
-        Navigator.push(
+        Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) =>
-                OtpScreen(email: email, country: country, password: password),
-            // PatternsScreen(
-            //   useremail: email,
-            // )
+            builder: (context) => OtpScreen(
+              email: email,
+              country: country,
+              password: password,
+            ),
           ),
         );
       } else {
