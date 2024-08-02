@@ -196,6 +196,7 @@ class _AppsScreenState extends State<AppsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white, // Set background color to white
       appBar: AppBar(
         title: Row(
           children: [
@@ -220,9 +221,20 @@ class _AppsScreenState extends State<AppsScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    '🔒 Secure Applications',
-                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.lock_outline,
+                        size: 30,
+                        color: Color(0xFF000E26),
+                      ),
+                      SizedBox(width: 10),
+                      Text(
+                        'Secure Applications',
+                        style: TextStyle(
+                            fontSize: 22, fontWeight: FontWeight.bold),
+                      ),
+                    ],
                   ),
                   SizedBox(height: 12),
                   Expanded(
@@ -238,15 +250,9 @@ class _AppsScreenState extends State<AppsScreen> {
                             onTap: _showAddAppDialog,
                             child: Container(
                               decoration: BoxDecoration(
-                                color: Colors.white,
+                                color: Colors.white, // Set background to white
                                 borderRadius: BorderRadius.circular(12),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.grey.withOpacity(0.3),
-                                    spreadRadius: 2,
-                                    blurRadius: 6,
-                                  ),
-                                ],
+                                boxShadow: [], // Removed box shadow
                               ),
                               child: Center(
                                 child: Icon(
@@ -263,15 +269,9 @@ class _AppsScreenState extends State<AppsScreen> {
                             onTap: () => _removeAppFromSecured(app),
                             child: Container(
                               decoration: BoxDecoration(
-                                color: Colors.white,
+                                color: Colors.white, // Set background to white
                                 borderRadius: BorderRadius.circular(12),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.grey.withOpacity(0.3),
-                                    spreadRadius: 2,
-                                    blurRadius: 6,
-                                  ),
-                                ],
+                                boxShadow: [], // Removed box shadow
                               ),
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -305,9 +305,20 @@ class _AppsScreenState extends State<AppsScreen> {
                     ),
                   ),
                   SizedBox(height: 12),
-                  Text(
-                    '⚠️ Not Secured',
-                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.warning_amber_outlined,
+                        size: 30,
+                        color: Colors.amber,
+                      ),
+                      SizedBox(width: 10),
+                      Text(
+                        'Not Secured',
+                        style: TextStyle(
+                            fontSize: 22, fontWeight: FontWeight.bold),
+                      ),
+                    ],
                   ),
                   SizedBox(height: 12),
                   Expanded(
@@ -316,14 +327,16 @@ class _AppsScreenState extends State<AppsScreen> {
                       itemBuilder: (context, index) {
                         Application app = getNotSecuredApps()[index];
                         return Card(
-                          elevation: 4,
+                          elevation: 2, // Reduced elevation
                           margin: EdgeInsets.symmetric(vertical: 4),
+                          color: Colors.grey[200], // Set card color to grey
                           child: ListTile(
                             leading: app is ApplicationWithIcon
                                 ? Image.memory(app.icon, width: 40, height: 40)
                                 : Icon(Icons.android, size: 40),
                             title: Text(app.appName),
-                            trailing: Icon(Icons.lock_outline),
+                            trailing: Icon(
+                                Icons.lock_open), // Changed to unlocked icon
                             onTap: () => _addNewApp(app),
                           ),
                         );
